@@ -7,7 +7,7 @@ Because it works synchronously, meaning that your tests will be easier to write,
 ## Can it be used with Jasmine/Mocha?
 Unfortunately *out of the box* this mock works only with [Jest](https://facebook.github.io/jest/).
 
-However, if you look at the [source code](https://github.com/knee-cola/jest-mock-axios/blob/master/lib/mock-axios.ts), you can see that it uses Jest only to define spies (for methods `post`, `get`, `put`, `delete`, `create`). This means that it can easily be modified to use any other testing framework - go to [GitHub](https://github.com/knee-cola/jest-mock-axios), clone it, modify it, play with it :)
+However, if you look at the [source code](https://github.com/knee-cola/jest-mock-axios/blob/master/lib/mock-axios.ts), you can see that it uses Jest only to define spies (for methods `post`, `get`, `put`, `patch`, `delete`, `create`). This means that it can easily be modified to use any other testing framework - go to [GitHub](https://github.com/knee-cola/jest-mock-axios), clone it, modify it, play with it :)
 
 # What's in this document?
 * [Installation](#installation)
@@ -113,9 +113,9 @@ export default UppercaseProxy;
 At the bottom of this page you can find [additional examples](#additional-examples).
 
 # Axios mock API
-In addition to standard Axios methods (`post`, `get`, `put`, `delete`, `create`), which are exposed as spies, Axios mock has three additional public methods, which are intended to facilitate mocking:
+In addition to standard Axios methods (`post`, `get`, `put`, `patch`, `delete`, `create`), which are exposed as spies, Axios mock has three additional public methods, which are intended to facilitate mocking:
 * `mockResponse` - simulates a server (web service) response
-* `mockError` - simulates a (network/server) error 
+* `mockError` - simulates a (network/server) error
 * `lastReqGet` - returns extended info about the most recent request
 * `lastPromiseGet` - returns promise created when the most recent request was made
 * `reset` - resets the Axios mock object - prepare it for the next test (typically used in `afterEach`)
@@ -183,7 +183,7 @@ let requestInfo = {
 ## axios.lastPromiseGet()
 `lastPromiseGet` method returns a promise given when the most recent server request was made. The returned value can be used to pinpoint exact server request we wish to resolve (the value is passed as the second param of `mockResponse` or `mockError` methods).
 
-The promise object returned by this function corresponds to the one returned by `post`, `get`, `put` or `delete` method inside the code we wish to test.
+The promise object returned by this function corresponds to the one returned by `post`, `get`, `put`, `patch` or `delete` method inside the code we wish to test.
 
 
 [Additional examples](#additional-examples) at the end of this document illustrate how this method can be used.
@@ -223,14 +223,14 @@ In our spec file we will compare promise stored inside the `MyComponent` with va
     import MyComponent from '../src/SomeSourceFile';
 
     let myComp = new MyComponent();
-    
+
     myComp.CallServer();
 
     // getting the extended info about the most recent request
     let lastReqInfo = MockAxios.lastReqGet();
     // getting the promise made when the most recent request was made
     let lastPromise = MockAxios.lastPromiseGet();
-    
+
     // the following expression will write `true` to the console
     // > here we compare promise stored in the `MyComponent` to the one
     //   returned by the `lastPromiseGet` method
@@ -257,7 +257,7 @@ it('when resolving a request an appropriate handler should be called', () => {
 
     let thenFn1 = jest.fn(),
         thenFn2 = jest.fn();
-    
+
     // creating the FIRST server request
     UppercaseProxy('client is saying hello!').then(thenFn1);
     // storing the request info - we'll need it later to pinpoint the request

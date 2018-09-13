@@ -6,7 +6,7 @@ describe('MockAxios', () => {
     afterEach(() => {
         MockAxios.reset();
     });
-  
+
     it(`should return a promise when called directly`, () => {
         expect(typeof MockAxios).toBe('function');
         expect(MockAxios()).toEqual(new SyncPromise);
@@ -16,6 +16,9 @@ describe('MockAxios', () => {
     });
     it("`put` should return a promise", () => {
         expect(MockAxios.put()).toEqual(new SyncPromise());
+    });
+    it("`patch` should return a promise", () => {
+        expect(MockAxios.patch()).toEqual(new SyncPromise());
     });
     it("`post` should return a promise", () => {
         expect(MockAxios.post()).toEqual(new SyncPromise());
@@ -35,8 +38,8 @@ describe('MockAxios', () => {
         let responseData = { data: {text:"some data" } };
         let responseObj = {"config": {}, "data": responseData.data, "headers": {}, "status": 200, "statusText": "OK"};
         MockAxios.mockResponse(responseObj);
-        
-        expect(thenFn).toHaveBeenCalledWith(responseObj);    
+
+        expect(thenFn).toHaveBeenCalledWith(responseObj);
     });
 
     it("`mockResponse` should remove the last promise from the queue", () => {
@@ -57,7 +60,7 @@ describe('MockAxios', () => {
         let responseData = { data: {text:"some data" } };
         let responseObj = {"config": {}, "data": responseData.data, "headers": {}, "status": 200, "statusText": "OK"};
         MockAxios.mockResponse(responseObj, secondPromise);
-        
+
         expect(firstFn).not.toHaveBeenCalled();
         expect(secondFn).toHaveBeenCalledWith(responseObj);
         expect(thirdFn).not.toHaveBeenCalled();
@@ -77,18 +80,18 @@ describe('MockAxios', () => {
         thirdPromise.then(thirdThen);
 
         MockAxios.mockResponse();
-        
+
         expect(firstThen).toHaveBeenCalled();
         expect(secondThen).not.toHaveBeenCalled();
         expect(thirdThen).not.toHaveBeenCalled();
 
         MockAxios.mockResponse();
-        
+
         expect(secondThen).toHaveBeenCalled();
         expect(thirdThen).not.toHaveBeenCalled();
 
         MockAxios.mockResponse();
-        
+
         expect(thirdThen).toHaveBeenCalled();
 
         // functions should be called once only
@@ -96,7 +99,7 @@ describe('MockAxios', () => {
         expect(secondThen.mock.calls.length).toBe(1);
         expect(thirdThen.mock.calls.length).toBe(1);
     });
-    
+
     // mockError - Simulate an error in server request
     it("`mockError` should fail the given promise with the provided response", () => {
         let thenFn = jest.fn();
@@ -115,57 +118,57 @@ describe('MockAxios', () => {
         MockAxios.mockError();
         expect(MockAxios.popPromise()).toBeUndefined();
       });
-      
+
       it("`mockError` fail the provided promise", () => {
         let firstFn = jest.fn();
         let secondFn = jest.fn();
         let thirdFn = jest.fn();
-      
+
         let firstPromise = MockAxios.post().catch(firstFn);
         let secondPromise = MockAxios.post().catch(secondFn);
         let thirdPromise = MockAxios.post().catch(thirdFn);
-      
+
         MockAxios.mockError({}, secondPromise);
-        
+
         expect(firstFn).not.toHaveBeenCalled();
         expect(secondFn).toHaveBeenCalled();
         expect(thirdFn).not.toHaveBeenCalled();
       });
-      
+
       it("`mockError` should fail the last given promise if none was provided", () => {
         let firstPromise = MockAxios.post();
         let secondPromise = MockAxios.post();
         let thirdPromise = MockAxios.post();
-      
+
         let firstFn = jest.fn();
         let secondFn = jest.fn();
         let thirdFn = jest.fn();
-      
+
         firstPromise.catch(firstFn);
         secondPromise.catch(secondFn);
         thirdPromise.catch(thirdFn);
-      
+
         MockAxios.mockError({});
-        
+
         expect(firstFn).toHaveBeenCalled();
         expect(secondFn).not.toHaveBeenCalled();
         expect(thirdFn).not.toHaveBeenCalled();
-      
+
         MockAxios.mockError();
-        
+
         expect(secondFn).toHaveBeenCalled();
         expect(thirdFn).not.toHaveBeenCalled();
-      
+
         MockAxios.mockError();
-        
+
         expect(thirdFn).toHaveBeenCalled();
-      
+
         // functions should be called once only
         expect(firstFn.mock.calls.length).toBe(1);
         expect(secondFn.mock.calls.length).toBe(1);
         expect(thirdFn.mock.calls.length).toBe(1);
       });
-    
+
     // lastReqGet - returns the most recent request
     it("`lastReqGet` should return the most recent request", () => {
         let thenFn = jest.fn();
@@ -174,7 +177,7 @@ describe('MockAxios', () => {
 
         expect(MockAxios.lastReqGet().promise).toBe(lastPromise);
     });
-    
+
     // lastPromiseGet - Returns promise of the most recent request
     it("`lastPromiseGet` should return the most recent promise", () => {
         let thenFn = jest.fn();
@@ -236,11 +239,13 @@ describe('MockAxios', () => {
         MockAxios.post();
         MockAxios.get();
         MockAxios.put();
+        MockAxios.patch();
         MockAxios.delete();
 
         expect(MockAxios.post).toHaveBeenCalled();
         expect(MockAxios.get).toHaveBeenCalled();
         expect(MockAxios.put).toHaveBeenCalled();
+        expect(MockAxios.patch).toHaveBeenCalled();
         expect(MockAxios.delete).toHaveBeenCalled();
 
         MockAxios.reset();
@@ -248,6 +253,7 @@ describe('MockAxios', () => {
         expect(MockAxios.post).not.toHaveBeenCalled();
         expect(MockAxios.get).not.toHaveBeenCalled();
         expect(MockAxios.put).not.toHaveBeenCalled();
+        expect(MockAxios.patch).not.toHaveBeenCalled();
         expect(MockAxios.delete).not.toHaveBeenCalled();
     });
 });

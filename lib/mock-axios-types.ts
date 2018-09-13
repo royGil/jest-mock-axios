@@ -20,6 +20,7 @@ type AxiosAPI = {
     get?:SpyFn;
     post?:SpyFn;
     put?:SpyFn;
+    patch?:SpyFn;
     delete?:SpyFn;
     create?:SpyFn;
 };
@@ -42,7 +43,7 @@ type AxiosMockAPI = {
     lastPromiseGet?:()=>SyncPromise;
     /**
      * Removes the give promise from the queue
-     * @param promise 
+     * @param promise
      */
 
     popPromise?:(promise?:SyncPromise) => SyncPromise;
@@ -52,7 +53,7 @@ type AxiosMockAPI = {
     lastReqGet?:()=>AxiosMockQueueItem;
     /**
      * Removes the give request from the queue
-     * @param promise 
+     * @param promise
      */
     popRequest?:(promise?:AxiosMockQueueItem) => AxiosMockQueueItem;
 
