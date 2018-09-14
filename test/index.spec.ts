@@ -30,6 +30,31 @@ describe('MockAxios', () => {
         expect(MockAxios.create()).toBe(MockAxios);
     });
 
+    it('should handle axios.all', () => {
+        MockAxios.all([MockAxios.get(), MockAxios.get()])
+        expect(MockAxios.popPromise()).toEqual(new SyncPromise())
+        expect(MockAxios.popPromise()).toEqual(new SyncPromise())
+        expect(MockAxios.popPromise()).toEqual(new SyncPromise())
+        expect(MockAxios.popPromise()).toEqual(undefined)
+    })
+
+    it('should handle axios.spread', () => {
+      MockAxios.spread((res1, res2) => {
+        expect(res1).toEqual(1);
+        expect(res2).toEqual(2);
+      })([1, 2])
+    })
+
+    it('should handle mockResponseAll', (done) => {
+      MockAxios.all([MockAxios.get(), MockAxios.get()])
+        .then(MockAxios.spread((a, b) => {
+          expect(a).toEqual({ data: 1 })
+          expect(b).toEqual({ data: 2 });
+          done()
+        }))
+      MockAxios.mockResponseAll([{ data: 1 }, { data: 2 }])
+    })
+
     // mockResponse - Simulate a server response, (optionaly) with the given data
     it("`mockResponse` should resolve the given promise with the provided response", () => {
         let thenFn = jest.fn();

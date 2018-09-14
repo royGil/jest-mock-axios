@@ -18,6 +18,8 @@ declare type AxiosAPI = {
     patch?: SpyFn;
     delete?: SpyFn;
     create?: SpyFn;
+    all?: SpyFn;
+    spread?: SpyFn;
 };
 declare type AxiosMockAPI = {
     /**
@@ -26,6 +28,10 @@ declare type AxiosMockAPI = {
      * @param promise (optional) request promise for which response should be resolved
      */
     mockResponse?: ((response?: HttpResponse, queueItem?: SyncPromise | AxiosMockQueueItem) => void);
+    /**
+      * Handle axios.all
+      */
+    mockResponseAll?: ((response?: HttpResponse[]) => void);
     /**
      * Simulate an error in server request
      * @param error (optional) error object

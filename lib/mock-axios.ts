@@ -32,6 +32,17 @@ MockAxios.put = jest.fn(_newReq);
 MockAxios.patch = jest.fn(_newReq);
 MockAxios.delete = jest.fn(_newReq);
 MockAxios.create = jest.fn(() => MockAxios);
+MockAxios.all = jest.fn((arr) => {
+  const promise = new SyncPromise()
+  _pending_requests.push({ promise, url: '' })
+
+  return promise
+})
+MockAxios.spread = jest.fn(cb => {
+  return function wrap(arr) {
+    return cb.apply(null, arr);
+  }
+})
 
 MockAxios.popPromise = (promise?:SyncPromise) => {
 
@@ -103,6 +114,12 @@ MockAxios.mockResponse = (response?:HttpResponse, queueItem:SyncPromise|AxiosMoc
 
   // resolving the Promise with the given response data
   popQueueItem(queueItem).resolve(response);
+}
+
+MockAxios.mockResponseAll = (responses?:HttpResponse[]):void => {
+  const promise = _pending_requests.pop().promise
+
+  promise.resolve(responses)
 }
 
 MockAxios.mockError = (error:any={}, queueItem:SyncPromise|AxiosMockQueueItem=null) => {
